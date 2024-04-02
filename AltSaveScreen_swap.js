@@ -83,14 +83,25 @@
 
     //로드섬네일
 
-    DataManager.loadThumbnail = function(id) {
+    // DataManager.loadThumbnail = function(id) {
+    //     if (!this._snapUrls[id]) {
+    //         const filename = this.makeThumbnailFilename(id);
+    //         if (StorageManager.exists(filename)) {
+    //             this._snapUrls[id] = StorageManager.loadObject(filename).then(url => {
+    //                 this._snapUrls[id] = url;
+    //                 return 0;
+    //             });
+    //         }
+    //     }
+    //     return this._snapUrls[id];
+    // };
+
+    DataManager.loadThumbnail = async function(id) {
         if (!this._snapUrls[id]) {
             const filename = this.makeThumbnailFilename(id);
             if (StorageManager.exists(filename)) {
-                this._snapUrls[id] = StorageManager.loadObject(filename).then(url => {
-                    this._snapUrls[id] = url;
-                    return 0;
-                });
+                const url = await StorageManager.loadObject(filename);
+                this._snapUrls[id] = url;
             }
         }
         return this._snapUrls[id];
@@ -164,39 +175,19 @@
         }
     };
 
-    // Window_SavefileStatus.prototype.drawContents = function(info, rect) {
-    //     const bottom = rect.y + rect.height;
-    //     const playtimeY = bottom - this.lineHeight();
-    //     this.drawText(info.title, rect.x + 192, rect.y, rect.width - 192);
-    //     this.drawPartyfaces(info.faces, rect.x, bottom - 144);
-    //     this.drawText(info.playtime, rect.x, playtimeY, rect.width, "right");
-    //     this.drawSnappedImage();//id, valid, thumbnail_X, thumbnail_Y); //??진심?
-    // };
-
     
     Window_SavefileStatus.prototype.drawContents = function(info, rect) {
         const bottom = rect.y + rect.height;
         const playtimeY = bottom - this.lineHeight();
         this.drawText(info.title, rect.x + 192, rect.y, rect.width - 192);
-        //this.drawPartyfaces(info.faces, rect.x, bottom - 144);
+        
         this.drawText(info.playtime, rect.x, playtimeY, rect.width, "right");
         this.drawSnappedImage();
     };
     
     
  //스크린샷 출력하는곳
-//     Window_SavefileStatus.prototype.drawSnappedImage = function()//savefileId, valid, x, y) 
-//     {
-//     const snapUrl = DataManager.getThumbnail(this._savefileId); //+this._
-//     if (showThumbnail && snapUrl) {
-//         const bitmap = ImageManager.loadThumbnailFromUrl(snapUrl);
-//         this.changePaintOpacity(true);
-//         bitmap.addLoadListener(function() {
-//             //this.contents.blt(bitmap, 0, 0, bitmap.width, bitmap.height, x, y);
-//             this.contents.blt(bitmap, 0, 0, bitmap.width, bitmap.height, thumbnail_X, thumbnail_Y);
-//         }.bind(this));
-//     }
-// };
+
 
 Window_SavefileStatus.prototype.drawSnappedImage = function() {
     const snapUrl = DataManager.getThumbnail(this._savefileId);
@@ -212,15 +203,6 @@ Window_SavefileStatus.prototype.drawSnappedImage = function() {
 
     
 
-// Window_SavefileStatus.prototype.drawPartyfaces = function(faces, x, y) {
-//     if (faces) {
-//         for (let i = 0; i < faces.length; i++) {
-//             const data = faces[i];
-//             this.drawFace(data[0], data[1], x + i * 150, y);
-//         }
-//     }
-// };
-//로드섬네일추가
 
 ImageManager.loadThumbnailFromUrl = function(url) {
     const cache = url.includes("/system/") ? this._system : this._cache;
